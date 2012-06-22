@@ -114,23 +114,24 @@ World.prototype = {
 		//this.tilecanvasbuf.style.display="none";
 		this.tilectxbuf = this.tilecanvasbuf.getContext('2d');
 
-		this.entitycanvas = $('<canvas class="entities" id="entitycanvas"></canvas>');
+		this.entitycanvas = $('<canvas class="entities" id="entitycanvas"></canvas>')[0];
 //		this.entitycanvas = document.createElement("canvas");
 //		this.entitycanvas.setAttribute("class", "entities");
 //		this.entitycanvas.setAttribute("id", "entitycanvas");
 		this.entitycanvas.width = window.innerWidth;
 		this.entitycanvas.height = window.innerHeight;
-		document.getElementsByTagName("body")[0].appendChild(this.entitycanvas);
-//		$('body')[0].appendChild(this.entitycanvas);
+//		document.getElementsByTagName("body")[0].appendChild(this.entitycanvas);
+		$('body')[0].appendChild(this.entitycanvas);
 		this.entityctx = this.entitycanvas.getContext('2d');
 
 		// LIGHTING canvas top layer
 		this.lighting = $('<canvas class="lighting"></canvas>');
 		this.lighting.appendTo('body');
-		this.lighting.css({left: 0, top: 0, position:fixed});
+		this.lighting.css({left: 0, top: 0, position:'absolute'});
 		this.lighting.width = window.innerWidth;
 		this.lighting.height = window.innerHeight;
-		this.lightingctx = lighting[0].getContext('2d');
+//		$('body')[0].appendChild(this.lighting[0]);
+		this.lightingctx = this.lighting[0].getContext('2d');
 		//light layer is all black with 80% alpha
 		this.lightingctx.globalAlpha = 0.8;
 		this.lightingctx.fillStyle = "#000";
