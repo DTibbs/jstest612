@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+<head>
+<title>Ninjas</title>
+<script src="/exposed.js"></script>
+<script src="/jquery.js"></script>
+<script src="/jquery.transform.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+			$(function() {
+				var config = require('config')
+//					, socket = new io.Socket(config.host)
+//					, socket = new io.Socket('111.67.169.232')
+					, socket = new io.Socket(null, {port: 8080, rememberTransport: false});
+
+				// maga
+				var Maga = require('maga')
+				  , playerManager = require('middleware/playerManager')
+				  , keys = new(require('lib/keys'))
+				  , Ninjas = require('ninjas')
+				  , GUtils = require('middleware/gutils')
+
+				// new game
+				var game = new Maga.Game('Ninjas')
+				  , room = game.createRoom()
+				  , players = playerManager(room, Ninjas)
+				  , me
+				
+				// socket.io
+				socket.on('connect', function() {
+				  // add our own player to the game
+				  var me = players.createMyself(parseInt(socket.transport.sessionid, 10).toString(32))
+				  room.addObject(me)
+				  room.watch(me, function(str) {
+				    socket.send(str)
+				  })
+				
+				  // main loop
+				  room.loop(function() {
+				    // keyboard input
+				    me.processKeys(keys)
+				    $('#console').text(this.state.frame)
+				  })
+				})
+				
+				socket.on('message', function(message) {
+				  room.parse(message, function(state) {
+				    players.set(state)
+				    room.applyState(state)
+				  })
+				})
+				
+				socket.on('disconnect', function() {
+				  players.remove(me)
+				})
+				
+				socket.connect()
+				
+				})
+		</script>
+<style>
+html,body {
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	background: #777777;
+}
+
+.ninja {
+	position: absolute;
+	width: 31;
+	height: 80;
+	margin-left: -10px;
+	margin-top: -30px; # console { position : fixed;
+	top: 0;
+	left: 0;
+	z-index: 10000;
+	color: #BBB;
+	font-family: Courier;
+	width: 300px;
+	height: 200px;
+}
+
+#main_grid {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 1;
+	font-family: Courier;
+	width: 1024;
+	height: 768;
+}
+</style>
+</head>
+<body>
+	<div id="console"></div>
+	<canvas id="main_grid"></canvas>
+</body>
+</html>

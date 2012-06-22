@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>node_ninja timings_test</title>
+
+<meta name="viewport"
+	content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
+<style type="text/css">
+body {
+	background-color: #000000;
+	margin: 0px;
+	overflow: hidden;
+}
+
+a {
+	color: #0078ff;
+}
+</style>
+<script type="text/javascript" src="FrameTimer.js"></script>
+<script type="text/javascript" src="SpriteSheet.js"></script>
+<script type="text/javascript" src="Animation.js"></script>
+<script type="text/javascript">
+			window.onload = function() {
+				var timer = new FrameTimer();
+				timer.tick();
+
+				var sprites = new SpriteSheet({
+						width: 31,
+						height: 71,
+						sprites: [
+							{ name: 'stand', x: 136, y: 22 },
+							{ name: 'walk_1', x: 179, y: 22 },
+							{ name: 'walk_2', x: 216, y: 22 },
+							{ name: 'walk_3', x: 252, y: 22 },
+							{ name: 'walk_4', x: 288, y: 22 },
+							{ name: 'walk_5', x: 327, y: 22 },
+							]
+				});
+				
+				var ninjaCanvas = document.getElementById('maincanvas');
+				var ctx = ninjaCanvas.getContext('2d');
+				var walk = new Animation([
+						{ sprite: 'walk_1', time: 0.16 },
+						{ sprite: 'walk_2', time: 0.16 },
+						{ sprite: 'walk_3', time: 0.16 },
+						{ sprite: 'walk_4', time: 0.16 },
+						{ sprite: 'walk_5', time: 0.16 },
+				], sprites);
+
+				var lastFrameName = 'blah';
+
+				var ninjaImage = new Image();
+				ninjaImage.onload = function() {
+					setInterval(function(){
+						walk.animate(timer.getSeconds());
+						var frame = walk.getSprite();
+						ctx.clearRect(0,0,31,71);
+						ctx.drawImage(ninjaImage, frame.x, frame.y, 31, 71, 0, 0, 31, 71);
+						//ctx.scale(2,1);
+						timer.tick();
+
+						if(frame.name == 'walk_5' && lastFrameName != 'walk_5') {
+							ctx.translate(ninjaCanvas.width+1, 0);
+							ctx.scale(-1,1);
+						}
+						lastFrameName = frame.name;
+					}, 100);
+				};
+
+				ninjaImage.src = 'imgs/ninjacommando.gif';
+			};
+		</script>
+</head>
+<body>
+	<h1>Ninja Anim Test</h1>
+	<canvas id="maincanvas" width="31" height="71"></canvas>
+	<!--<canvas id="ninja_canvas2" width="31" height="71"></canvas>-->
+</body>
+</html>
