@@ -2,6 +2,7 @@
 var framecount = 0;
 var curtick = 0;
 var starttick = 0;
+var renderTime = 0;
 
 var gWorld = null;
 
@@ -16,15 +17,15 @@ init = function() {
 	setInterval(mainloop, 1);
 };
 
+var kFPS = 60;
+
 var mainloop = function() {
 	//
 	//MAIN()
 	//
-	gWorld.processKeys();
+	gWorld.timer.tick();
 
-	gWorld.render();
-
-	curtick = gWorld.timer._lastTick;
+	curtick = gWorld.timer._currentTick;
 	framecount++;
 	//Set framerate in console
 	var time = curtick - starttick;
@@ -33,10 +34,16 @@ var mainloop = function() {
 	//$('#console').text(fps);
 	var console = document.getElementById('console');
 	console.innerText = fps;
-	if(time > 3000)
-	{
+	if(time > 3000) {
 		starttick = curtick;
 		framecount = 0;
+	}
+	
+	renderTime += gWorld.timer._currentTick - gWorld.timer._lastTick;
+	if(renderTime > (1000 / kFPS)) {
+		renderTime = 0;
+		gWorld.processKeys();
+		gWorld.render();
 	}
 };
 

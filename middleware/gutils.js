@@ -55,7 +55,7 @@ GUtils.Animation.prototype = {
 /********************************************************************************/
 
 GUtils.FrameTimer = function() {
-    this._lastTick = (new Date()).getTime();
+    this._currentTick = this._lastTick = (new Date()).getTime();
 };
 
 GUtils.FrameTimer.prototype = {
@@ -77,9 +77,9 @@ GUtils.FrameTimer.prototype = {
 	},
 
     tick: function() {
-        var currentTick = (new Date()).getTime();
-        this._frameSpacing = currentTick - this._lastTick;
-        this._lastTick = currentTick;
+        this._lastTick = this._currentTick;
+        this._currentTick = (new Date()).getTime();
+        this._frameSpacing = this._currentTick - this._lastTick;
     }
 };
 
@@ -138,8 +138,8 @@ GUtils.Tile.prototype = {
 	_image: null,
 	_solid: true,
 	_health: 1,
-	_width: 32,
-	_height: 32,
+	_width: 16,
+	_height: 16,
 
 	load: function(data) {
 		this._id = data._id;

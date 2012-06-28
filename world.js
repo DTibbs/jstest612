@@ -100,7 +100,7 @@ World.prototype = {
 		this.tilecanvas.setAttribute("id", "tilecanvas");
 		this.tilecanvas.width = window.innerWidth;
 		this.tilecanvas.height = window.innerHeight;
-		document.getElementsByTagName("body")[0].appendChild(this.tilecanvas);
+		$("body")[0].appendChild(this.tilecanvas);
 		this.tilectx = this.tilecanvas.getContext('2d');
 
 		//This is a buffer canvas that we actually render the tiles to, it's big.
@@ -114,32 +114,25 @@ World.prototype = {
 		//this.tilecanvasbuf.style.display="none";
 		this.tilectxbuf = this.tilecanvasbuf.getContext('2d');
 
-		this.entitycanvas = $('<canvas class="entities" id="entitycanvas"></canvas>')[0];
-//		this.entitycanvas = document.createElement("canvas");
-//		this.entitycanvas.setAttribute("class", "entities");
-//		this.entitycanvas.setAttribute("id", "entitycanvas");
+		this.entitycanvas = $('<canvas class="entities"></canvas>');
 		this.entitycanvas.width = window.innerWidth;
 		this.entitycanvas.height = window.innerHeight;
-//		document.getElementsByTagName("body")[0].appendChild(this.entitycanvas);
-		$('body')[0].appendChild(this.entitycanvas);
-		this.entityctx = this.entitycanvas.getContext('2d');
+		$('body')[0].appendChild(this.entitycanvas[0]);
+		this.entityctx = this.entitycanvas[0].getContext('2d');
 
 		// LIGHTING canvas top layer
-		this.lighting = $('<canvas class="lighting"></canvas>');
-		this.lighting.appendTo('body');
-		this.lighting.css({left: 0, top: 0, position:'absolute'});
+		this.lighting = $('<canvas class="lighting"></canvas>')[0];
 		this.lighting.width = window.innerWidth;
 		this.lighting.height = window.innerHeight;
-//		$('body')[0].appendChild(this.lighting[0]);
-		this.lightingctx = this.lighting[0].getContext('2d');
-		//light layer is all black with 80% alpha
-		this.lightingctx.globalAlpha = 0.8;
-		this.lightingctx.fillStyle = "#000";
-		this.lightingctx.fillRect(0, 0);
+		$('body')[0].appendChild(this.lighting);
+		this.lightingctx = this.lighting.getContext('2d');
+		//light layer is all black with 80% alpha?
+		//this.lightingctx.globalAlpha = 0.8;
+		//this.lightingctx.globalCompositeOperation="source-atop";//"copy";
 		
 		// light image drawn where the mouse is
 		this.mouselight = new Image();
-		this.mouselight.src = "imgs/light.gif";
+		this.mouselight.src = "imgs/glow_alpha.png";
 
 		//
 		//TODO If a new world, generate, otherwise load
@@ -245,18 +238,22 @@ World.prototype = {
 	}, //end processKeys()
 
 	render: function() {
-			if(this.tilecanvas.width != window.innerWidth ||
+		if(this.tilecanvas.width != window.innerWidth ||
 			this.tilecanvas.height != window.innerHeight) {
 			this.tilecanvas.width = window.innerWidth;
 			this.tilecanvas.height = window.innerHeight;
 		}
-
+		
+		if(this.lighting.width != window.innerWidth ||
+			this.lighting.height != window.innerHeight) {
+			this.lighting.width = window.innerWidth;
+			this.lighting.height = window.innerHeight;
+		}
 
 		//Trick to clear entire tilecanvas by just "changing" its width
 		//this.tilecanvas.width = this.tilecanvas.width;
 		//tilectx.clearRect(0,0,31,71);	
 		this.tilectx.drawImage(this.bgImage, 0, 0, 1024, 768, 0, 0, 1024, 768);
-		this.timer.tick();
 
 		//GridOffset.x,y will always be positive values.
 		//Start with 
@@ -264,8 +261,6 @@ World.prototype = {
 		var startcol = DIV(this.gridOffset.x, TILE_H);
 		var endrow = startrow + 2 + DIV(this.tilecanvas.height, TILE_H);
 		var endcol = startcol + 2 + DIV(this.tilecanvas.width, TILE_W);
-
-
 
 		// Rendering now deferred to load/addTile so we only render once to a buffer
 		//Rendering tiles to tilectxbuf
@@ -283,19 +278,13 @@ World.prototype = {
 		this.tiles[this.curMouseTileID].render(this.tilectx,
 			(TILE_W * DIV(this.curMousePos.x, TILE_W)) + this.gridOffset.x % TILE_W ,
 			(TILE_H * DIV(this.curMousePos.y, TILE_H)) + this.gridOffset.y % TILE_H);
-
-		//Now we just drawImage on the real tilectx with the tilecanvasbuf
-		//tilectx.drawImage(this.tilecanvasbuf, 0, 0);
-
-		//lightingctx.fillStyle = "rgba(0,0,0, 0.8)";
-		//lightingctx.fillRect(0, 0, 1024, 768);
-		//lightingctx.clearRect(curMousePos.x-64,
-		//						curMousePos.y-64,
-		//						128,
-		//						128);
-		//lightingctx.drawImage(mouselight,
-		//					curMousePos.x-64,
-		//					curMousePos.y-64);
+		
+		this.lightingctx.clearRect(0, 0, this.lighting.width, this.lighting.height);
+		this.lightingctx.fillstyle = "#000";
+		this.lightingctx.fillRect(0,0,this.lighting.width, this.lighting.height);
+		this.lightingctx.clearRect(this.curMousePos.x-128, this.curMousePos.y-128, 256, 256);
+		this.lightingctx.drawImage(this.mouselight, this.curMousePos.x-128,
+							this.curMousePos.y-128);
 
 	} //end render()
 };
