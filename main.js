@@ -6,7 +6,7 @@ var renderTime = 0;
 
 var gWorld = null;
 
-init = function() {
+var init = function() {
 	if(gWorld === undefined || gWorld === null)
 	{
 		gWorld = new World();
@@ -107,3 +107,6 @@ window.onmousemove = MouseMove;
 window.onmousedown = MouseDown;
 window.onmouseup = MouseUp;
 window.onmousewheel = MouseWheel; 
+window.ontouchstart = TouchStart;
+window.ontouchmove = TouchMove;
+window.ontouchend = TouchEnd;

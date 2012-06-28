@@ -214,10 +214,6 @@ World.prototype = {
 		}
 	}, //end addTile(x,y,tile)
 
-	//
-	//TODO This function is hosed, fix it. Not going the correct direction and/or snapping is wrong
-	//
-
 	processKeys: function() {
 		if(keys_helper.keysdown[keys_helper.KeyEnum.VK_LEFT]) {
 	   	   this.gridOffset.x += 4;

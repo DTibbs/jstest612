@@ -1,3 +1,7 @@
+//
+// DMT TODO: DEPRECATED, DELETE OR REFACTOR
+//
+
 var PlayerManager = module.exports = function(room, magaObject, options) {
   if (!(this instanceof PlayerManager)) return new PlayerManager(room, magaObject, options);
   this.room = room;

@@ -126,6 +126,45 @@ GUtils.SpriteSheet.prototype = {
 /*********************************************************************************/
 
 /********************************************************************************/
+/* Tile    																		*/
+/********************************************************************************/
+GUtils.PlayerController = function() {
+  return this;
+};
+
+GUtils.PlayerController.prototype = {
+  score: 0,
+  color: "#00A",
+  x: 220,
+  y: 270,
+  width: 32,
+  height: 32,
+  DPADRadius: 70,
+  bShooting: false,
+  shootPos: {x:0,y:0},
+  touchPos: {x:0,y:0},
+  ctrlPos: { x:0,y:0,tID:0,
+               draw: function(canvas) {
+                 if(canvas && this.tID !== 0) {
+                   canvas.beginPath();
+                   canvas.arc(this.x, this.y, this.DPADRadius, 0, Math.PI*2, true);
+                   canvas.stroke();
+                 }
+               }},
+  draw: function(canvas) {
+    canvas.fillStyle = this.color;
+    canvas.fillRect(this.x, this.y, this.width, this.height);
+  },
+  midpoint: function() {
+    return {
+      x: this.x + this.width * 0.5,
+      y: this.y + this.height * 0.5
+    };
+  },
+};
+/*********************************************************************************/
+
+/********************************************************************************/
 /* Tile																			*/
 /********************************************************************************/
 
